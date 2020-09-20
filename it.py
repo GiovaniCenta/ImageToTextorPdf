@@ -1,8 +1,8 @@
 import cv2
 import pytesseract
+from buttons import *
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 pdfButtonStyle = "border:1px solid red; color: white"
 txtButtonStyle = "border:1px solid red; color: white"
@@ -22,11 +22,11 @@ class Ui_MainWindow(object):
         self.txtButton.setObjectName("txt Button")
         self.txtButton.setStyleSheet(txtButtonStyle)
 
-
         self.pdfButton = QtWidgets.QToolButton(self.centralwidget)
         self.pdfButton.setGeometry(QtCore.QRect(320, 260, 91, 41))
         self.pdfButton.setObjectName("pdf button")
         self.pdfButton.setStyleSheet(pdfButtonStyle)
+
 
 
         MainWindow.setCentralWidget(self.centralwidget)
@@ -44,6 +44,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Image to Text or PDF"))
+
         self.txtButton.setText(_translate("MainWindow", "Image to text"))
         self.txtButton.clicked.connect(self.clickimgtoText)
         self.pdfButton.setText(_translate("MainWindow", "Image to PDF"))
@@ -51,47 +52,62 @@ class Ui_MainWindow(object):
 
 
 
-    def sucessButtonCall(self):
-        _translate = QtCore.QCoreApplication.translate
-        self.sucessButton = QtWidgets.QWidget
-        self.sucessButton = QtWidgets.QToolButton(self.centralwidget)
-        self.sucessButton.setGeometry(QtCore.QRect(250, 180, 91, 41))
-        self.sucessButton.setObjectName("sucessButton")
-        self.sucessButton.setStyleSheet(sucessButtonStyle)
-        self.sucessButton.setText(_translate("MainWindow","Converted Succesfully"))
+    def clickSelectfile(self):
+        self.w = App()
+
+
+        path=self.w.openFileNameDialog()
+        print(path)
+        return path
 
 
 
-    def clickimgtoPDF(self):
-        imgtoPDF()
+
+    def clickimgtoPDF(self,path):
+        path = self.clickSelectfile()
+        self.imgtoPDF(path)
         self.sucessButtonCall()
 
-
-
-        
-    def clickimgtoText(self):
-        imgtoText()
+    def clickimgtoText(self,path):
+        path = self.clickSelectfile()
+        self.imgtoText(path)
         self.sucessButtonCall()
-        
-        
-def imgtoText():
-    img = cv2.imread('H:\\teste\\1.jpg')
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # need to encode the image to RGB, it is how opencv works
-    txt = pytesseract.image_to_string(img)
-    print(txt)
-    f = open("result.txt", "w")
-    f.write(txt)
-    f.close()
-    
+    def sucessButtonCall(self):  # <===
+        self.w = SucessButton()
+        self.w.show()
+
+
+        #self.w.setStyle()
 
 
 
-def imgtoPDF():
-    img = cv2.imread('H:\\teste\\1.jpg')
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # need to encode the image to RGB, it is how opencv works
-    pdf = pytesseract.image_to_pdf_or_hocr(img, extension='pdf')
-    with open('test.pdf', 'w+b') as f:
-        f.write(pdf)
+
+
+
+
+    def imgtoText(self,path):
+
+        #CORRIGIR QUANDO NÃO SELECIONA IMAGEM
+        img = cv2.imread(path)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # need to encode the image to RGB, it is how opencv works
+        print('oi')
+        txt = pytesseract.image_to_string(img)
+        print(txt)
+        f = open("result.txt", "w")
+        f.write(txt)
+        f.close()
+
+
+    def imgtoPDF(self,path):
+        # CORRIGIR QUANDO NÃO SELECIONA IMAGEM
+        path = self.clickSelectfile()
+        img = cv2.imread(path)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # need to encode the image to RGB, it is how opencv works
+        pdf = pytesseract.image_to_pdf_or_hocr(img, extension='pdf')
+        with open('test.pdf', 'w+b') as f:
+            f.write(pdf)
+
+
 
 
 if __name__ == "__main__":
